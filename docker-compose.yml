@@ -1,0 +1,36 @@
+version: '3'  # 指定 compose 的版本
+services: 
+  web:  # 定义 service
+  
+    # build:  # 重新构建镜像
+    #   context: .  # 构建镜像的上下文(本地相对路径)
+    #   dockerfile: Dockerfile   # 指定 dockerfile 文件
+    #   args:  # 构建镜像时使用的环境变量
+    #     - NODE_ENV=develop
+
+    container_name: web-container   # 容器名称
+    image: docker-demo  # 使用已存在的镜像
+    ports:  # 端口映射
+      - "9999:8888"
+    networks:  # 网络
+      - my-network
+    depends_on:  # service 之间的依赖
+      - redis
+    volumes:  # 挂载数据
+      - "./:/work/myapp/"
+    restart: always   # 重启设置
+    env_file:   # 环境变量配置文件, key=value
+      - ./docker.env
+    environment:   # 设置环境变量, 会覆盖 env 中相同的环境变量
+      NODE_ENV: abc
+    command: npm run test # 容器启动后执行的指令
+
+  redis:
+    container_name: redis-container
+    image: redis:latest
+    networks: 
+      - my-network
+
+networks:   # 自定义网络
+  my-network:
+
